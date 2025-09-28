@@ -2,9 +2,12 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"os"
+	// "github.com/U-Mina/weather-api/internal/models"
+	// "weater-api/internal/models"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,8 +29,34 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 		apiKey,
 	)
 
-	w.Header().Set("Content-Type", "text/plain")
-	fmt.Fprintf(w, "Request URL: %s", requestURL)
+	/** get request to open-weather
+	if response, err := http.Get(requestURL); err != nil {
+		http.Error(w, "Fail to get from openWeather!", http.StatusInternalServerError)
+		return
+	}
+	defer response.Body.close()
+	=> wrong syntax, 'response' is within scope! so defer not working
+	*/
+
+	response, err := http.Get(requestURL)
+	if err != nil {
+		http.Error(w, "Fail to fetch data from OpenWeather!", http.StatusInternalServerError)
+		return
+	}
+
+	// IMPORTANT: close connection when func finished!
+	defer response.Body.Close()
+
+	body, err := io.ReadAll(response.Body)
+	if err != nil {
+		http.Error(w, "Fail to read response body", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+
+	// fmt.Fprintf(w, "Request URL: %s", requestURL)
 	// create sample data using struct
 	// data := models.WeatherData{
 	// 	City:        "Helbronn",
