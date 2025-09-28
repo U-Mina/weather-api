@@ -1,14 +1,24 @@
 apiVersion: apps/v1
+# which API group/version handle this obj
+# Deployment use apps/vq in all current clusters
 kind: Deployment
-metadate:
+metadata:
+# defining details
   name: weather-api-deployment
 spec:
+# spec for desired state of Deployment
   replicas: 1
+  # number of Pod to run
   selector:
+  # selector & matchLabels: how Deployment finds the Pods it manages
     matchLabels:
       app: weather-api
+      # this is lable key!(or value)
+      # must match with 'template's label'
   template:
-    metadate:
+  # Pod Template (spec.template)
+  # full Pod spec used to create Pods
+    metadata:
       labels:
         app: weather-api
     spec:
@@ -17,3 +27,6 @@ spec:
         image: weather-api:v1
         ports:
         - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: openweathermap-secret
