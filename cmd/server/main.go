@@ -8,6 +8,7 @@ import (
 	"os"
 	"encoding/json"
 	"github.com/U-Mina/weather-api/internal/models"
+	"github.com/joho/godotenv"
 	// "weather-api/internal/models"
 )
 
@@ -15,13 +16,13 @@ func helloHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Hello, my Go weather api!")
 }
 
-func weatherHandler(w http.ResponseWriter, r *http.Request) {
+func weatherHandler(w http.ResponseWriter, r *http.Request, apiKey string) {
 	// fmt.Fprintf(w, "Checking weather...")
-	apiKey := os.Getenv("API_KEY")
-	if apiKey == "" {
-		http.Error(w, "API key not set", http.StatusInternalServerError)
-		return
-	}
+	// apiKey := os.Getenv("API_KEY")
+	// if apiKey == "" {
+	// 	http.Error(w, "API key not set", http.StatusInternalServerError)
+	// 	return
+	// }
 	city := "Heilbronn"
 	// 9f4ba2e32be02a0368d1afa4efefbf69
 	requestURL := fmt.Sprintf(
@@ -122,12 +123,25 @@ func main() {
 	// 	fmt.Fprintf(w, "Hello, Weather API!")
 	// 	// Q: why use Fprintf()?? (compare with println/printf etc)
 	// })
+
+	if err := godotenv.Load(); err != nil {
+		log.Println("Warning: .env not found")
+	}
+
+	if apiKey := os.Getenv("API_KEY"); apiKey == "" {
+		log.Fatal("API_KEY not set in .env")
+	}
+
 	http.HandleFunc("/", helloHandler)
 
 	// http.HandleFunc("/weather", func(w http.ResponseWriter, r *http.Request) {
 	// 	fmt.Fprintf(w, "Checking the weather...")
 	// })
-	http.HandleFunc("/weather", weatherHandler)
+	// http.HandleFunc("/weather", weatherHandler)
+	http.HandleFunc("/weather", func(w http.ResponseWriter, r *http.Request) {
+		// Call your original handler, passing the key as an argument
+		weatherHandler(w, r, apiKey)
+	})
 
 	/* systax meaning of func(w, ...) {}
 	   : when a request from '/', run this func (namely: func(w ,...))
