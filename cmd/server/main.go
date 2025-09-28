@@ -6,8 +6,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	// "github.com/U-Mina/weather-api/internal/models"
-	// "weater-api/internal/models"
+	"encoding/json"
+	"github.com/U-Mina/weather-api/internal/models"
+	// "weather-api/internal/models"
 )
 
 func helloHandler(w http.ResponseWriter, r *http.Request) {
@@ -53,8 +54,46 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var apiResponse struct {
+		Name string `json:"name"`
+		Main struct {
+			Temp float64 `json:"temp"`
+			TempMax float64 `json:"temp_max"`
+			TempMin float64 `json:"temp_min"`
+			Humidity int `json:"humidity"`
+			// Pressure int `json:"pressure`
+
+		} `json:"main"`
+		Weather []struct {
+			Description string `json:"description"`
+		} `json:"weather"`
+		/*
+		array in json maps to slice[] in GO
+		Weather []struct ==> declared a slice of structs
+		JSON OBJ -> Go 'struct'
+		JSON array -> Go []struct (or '[]T' for any type)
+		*/
+	}
+
+	if err := json.Unmarshal(body, &apiResponse); err != nil {
+		http.Error(w, "Fail to parse weather data from JSON", http.StatusInternalServerError)
+		return
+	}
+
+	data := models.WeatherData {
+		City: apiResponse.Name,
+		Temperature: apiResponse.Main.Temp,
+		TempMax: apiResponse.Main.TempMax,
+		TempMin: apiResponse.Main.TempMin,
+		Humidity: apiResponse.Main.Humidity,
+		Description: apiResponse.Weather[0].Description,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write(body)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, "Fail to encode response", http.StatusInternalServerError)
+	}
+	// w.Write(body)
 
 	// fmt.Fprintf(w, "Request URL: %s", requestURL)
 	// create sample data using struct
