@@ -1,0 +1,53 @@
+## Structure align with GO convention
+
+weather-service/
+├── cmd/
+│   └── server/          # entry point
+├── internal/
+│   └── models/          # Data structures
+├── k8s/
+│   ├── deployment.yaml
+│   ├── service.yaml
+│   └── secret_template.yaml
+├── terraform/
+│   ├── .terraform.lock.hcl
+│   ├── deployment.tf
+│   ├── service.tf
+│   ├── secret_template.tf
+│   └── providers.tf
+├── .env.template
+├── docker-compose.yml
+├── Dockerfile
+├── go.mod
+├── go.sum
+├── .dockerignore
+├── .gitignore
+└── README.md
+
+## Architecure Wise
+
+┌─────────────────────────────────────────────┐
+│          Terraform (IaC)                    │
+│  • Manages all infrastructure               │
+│  • One-command deployment                   │
+└────────────────┬────────────────────────────┘
+                 │
+┌────────────────▼────────────────────────────┐
+│          Kubernetes Cluster                 │
+│  ┌──────────────────────────────────────┐   │
+│  │     Weather Service Deployment       │   │
+│  │  • Go REST API                       │   │
+│  │  • Flexible scaling                  │   │
+│  └──────────────┬───────────────────────┘   │
+│                 │                           │
+│  ┌──────────────▼───────────────────────┐   │
+│  │     Service (ClusterIP)              │   │
+│  └──────────────┬───────────────────────┘   │
+│                 │                           │
+│  ┌──────────────▼───────────────────────┐   │
+│  │     Secrets (API Keys)               │   │
+│  └──────────────────────────────────────┘   │
+└─────────────────────────────────────────────┘
+                 │
+                 ▼
+      External: OpenWeatherMap API
