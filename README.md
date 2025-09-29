@@ -1,5 +1,6 @@
 ## Structure align with GO convention
 
+```bash
 weather-service/
 ├── cmd/
 │   └── server/          # entry point
@@ -23,9 +24,10 @@ weather-service/
 ├── .dockerignore
 ├── .gitignore
 └── README.md
+```
 
 ## Architecure Wise
-
+```bash
 ┌─────────────────────────────────────────────┐
 │          Terraform (IaC)                    │
 │  • Manages all infrastructure               │
@@ -51,3 +53,4 @@ weather-service/
                  │
                  ▼
       External: OpenWeatherMap API
+```
