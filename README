@@ -1,4 +1,4 @@
-**Structure align with GO convention**
+# Structure align with GO convention
 
 weather-service/
 ├── cmd/
@@ -24,7 +24,8 @@ weather-service/
 ├── .gitignore
 └── README.md
 
-**Architecure Wise**
+# Architecure Wise
+
 ┌─────────────────────────────────────────────┐
 │          Terraform (IaC)                    │
 │  • Manages all infrastructure               │
